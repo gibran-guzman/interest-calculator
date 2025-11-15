@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interés Simple</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Elms+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Elms+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container py-3">
+      <div class="card shadow-lg">
+        <div class="card-body p-4">
+          <form id="simple-calculatorForm">
+            <div class="mb-4">
+              <label for="simple-unknownVariable" class="form-label fw-bold">
+                <i class="fas fa-question-circle me-2"></i>Selecciona la
+                incógnita a calcular:
+              </label>
+              <select
+                class="form-select form-select-lg"
+                id="simple-unknownVariable"
+                required
+              >
+                <option value="">-- Selecciona una incógnita --</option>
+                <option value="C">Capital (C)</option>
+                <option value="i">Tasa de interés anual (i)</option>
+                <option value="n">Tiempo en años (n)</option>
+                <option value="I">Interés (I)</option>
+                <option value="M">Monto (M)</option>
+              </select>
+            </div>
+
+            <div id="simple-inputFields" class="mb-4">
+              <div class="mb-3 input-group-wrapper" id="simple-capitalGroup">
+                <label for="simple-capital" class="form-label"
+                  >Capital (C)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-dollar-sign"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="simple-capital"
+                    placeholder="Ej: 10000"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <div class="form-text" id="simple-capitalFormatted"></div>
+                <div class="invalid-feedback" id="simple-capitalError"></div>
+              </div>
+
+              <div class="mb-3 input-group-wrapper" id="simple-rateGroup">
+                <label for="simple-interestRate" class="form-label"
+                  >Tasa de interés anual (%)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-percent"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="simple-interestRate"
+                    placeholder="Ej: 5"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <div class="form-text" id="simple-rateFormatted"></div>
+                <div class="invalid-feedback" id="simple-rateError"></div>
+              </div>
+
+              <div class="mb-3 input-group-wrapper" id="simple-timeGroup">
+                <label for="simple-time" class="form-label"
+                  >Tiempo (años)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-clock"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="simple-time"
+                    placeholder="Ej: 3"
+                    step="0.01"
+                    min="0"
+                  />
+                  <select
+                    class="form-select"
+                    id="simple-timeUnit"
+                    style="max-width: 150px"
+                  >
+                    <option value="years" selected>Años</option>
+                    <option value="months">Meses</option>
+                    <option value="days">Días</option>
+                  </select>
+                </div>
+                <div class="form-text" id="simple-timeFormatted"></div>
+                <div class="invalid-feedback" id="simple-timeError"></div>
+              </div>
+
+              <div class="mb-3 input-group-wrapper" id="simple-interestGroup">
+                <label for="simple-interest" class="form-label"
+                  >Interés (I)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-coins"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="simple-interest"
+                    placeholder="Ej: 1500"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <div class="form-text" id="simple-interestFormatted"></div>
+                <div class="invalid-feedback" id="simple-interestError"></div>
+              </div>
+
+              <div class="mb-3 input-group-wrapper" id="simple-amountGroup">
+                <label for="simple-amount" class="form-label">Monto (M)</label>
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-money-bill-wave"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="simple-amount"
+                    placeholder="Ej: 11500"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <div class="form-text" id="simple-amountFormatted"></div>
+                <div class="invalid-feedback" id="simple-amountError"></div>
+              </div>
+            </div>
+
+            <div class="mb-4" id="simple-formulaSection" style="display: none">
+              <label class="form-label fw-bold">
+                <i class="fas fa-square-root-alt me-2"></i>Fórmula que se va a
+                usar:
+              </label>
+              <div id="simple-formulaDisplay" class="formula-box">
+                Selecciona una incógnita e ingresa valores para determinar la
+                fórmula.
+              </div>
+              <small class="text-muted"
+                >La fórmula se selecciona automáticamente según los datos
+                disponibles.</small
+              >
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg px-5"
+                id="simple-evaluateBtn"
+                disabled
+              >
+                <i class="fas fa-play me-2"></i>Calcular
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary btn-lg px-5"
+                id="simple-resetBtn"
+              >
+                <i class="fas fa-redo me-2"></i>Limpiar
+              </button>
+            </div>
+          </form>
+
+          <div id="simple-resultSection" class="mt-4" style="display: none">
+            <div class="alert" id="simple-resultAlert" role="alert"></div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <small class="text-muted"
+          ><i class="fas fa-info-circle me-1"></i>Ingresa 3 valores conocidos
+          para calcular la incógnita seleccionada</small
+        >
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../shared-utils.js"></script>
+    <script src="simple-calculator.js"></script>
+  </body>
+</html>
