@@ -16,6 +16,10 @@
     />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Elms+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="container-fluid py-4">
@@ -86,260 +90,11 @@
               aria-labelledby="tab-calculadora-tab"
               tabindex="0"
             >
-              <!-- Calculator Card -->
-              <div class="card shadow-lg">
-                <div class="card-body p-4">
-                  <form id="simple-calculatorForm">
-                    <!-- Select Unknown Variable -->
-                    <div class="mb-4">
-                      <label
-                        for="simple-unknownVariable"
-                        class="form-label fw-bold"
-                      >
-                        <i class="fas fa-question-circle me-2"></i>Selecciona la
-                        incógnita a calcular:
-                      </label>
-                      <select
-                        class="form-select form-select-lg"
-                        id="simple-unknownVariable"
-                        required
-                      >
-                        <option value="">-- Selecciona una incógnita --</option>
-                        <option value="C">Capital (C)</option>
-                        <option value="i">Tasa de interés anual (i)</option>
-                        <option value="n">Tiempo en años (n)</option>
-                        <option value="I">Interés (I)</option>
-                        <option value="M">Monto (M)</option>
-                      </select>
-                    </div>
-
-                    <!-- Input Fields -->
-                    <div id="simple-inputFields" class="mb-4">
-                      <!-- Capital -->
-                      <div
-                        class="mb-3 input-group-wrapper"
-                        id="simple-capitalGroup"
-                      >
-                        <label for="simple-capital" class="form-label"
-                          >Capital (C)</label
-                        >
-                        <div class="input-group">
-                          <span class="input-group-text"
-                            ><i class="fas fa-dollar-sign"></i
-                          ></span>
-                          <input
-                            type="number"
-                            class="form-control"
-                            id="simple-capital"
-                            placeholder="Ej: 10000"
-                            step="0.01"
-                            min="0"
-                          />
-                        </div>
-                        <div
-                          class="form-text"
-                          id="simple-capitalFormatted"
-                        ></div>
-                        <div
-                          class="invalid-feedback"
-                          id="simple-capitalError"
-                        ></div>
-                      </div>
-
-                      <!-- Interest Rate -->
-                      <div
-                        class="mb-3 input-group-wrapper"
-                        id="simple-rateGroup"
-                      >
-                        <label for="simple-interestRate" class="form-label"
-                          >Tasa de interés anual (%)</label
-                        >
-                        <div class="input-group">
-                          <span class="input-group-text"
-                            ><i class="fas fa-percent"></i
-                          ></span>
-                          <input
-                            type="number"
-                            class="form-control"
-                            id="simple-interestRate"
-                            placeholder="Ej: 5"
-                            step="0.01"
-                            min="0"
-                          />
-                        </div>
-                        <div class="form-text" id="simple-rateFormatted"></div>
-                        <div
-                          class="invalid-feedback"
-                          id="simple-rateError"
-                        ></div>
-                      </div>
-
-                      <!-- Time -->
-                      <div
-                        class="mb-3 input-group-wrapper"
-                        id="simple-timeGroup"
-                      >
-                        <label for="simple-time" class="form-label"
-                          >Tiempo (años)</label
-                        >
-                        <div class="input-group">
-                          <span class="input-group-text"
-                            ><i class="fas fa-clock"></i
-                          ></span>
-                          <input
-                            type="number"
-                            class="form-control"
-                            id="simple-time"
-                            placeholder="Ej: 3"
-                            step="0.01"
-                            min="0"
-                          />
-                          <select
-                            class="form-select"
-                            id="simple-timeUnit"
-                            style="max-width: 150px"
-                          >
-                            <option value="years" selected>Años</option>
-                            <option value="months">Meses</option>
-                            <option value="days">Días</option>
-                          </select>
-                        </div>
-                        <div class="form-text" id="simple-timeFormatted"></div>
-                        <div
-                          class="invalid-feedback"
-                          id="simple-timeError"
-                        ></div>
-                      </div>
-
-                      <!-- Interest -->
-                      <div
-                        class="mb-3 input-group-wrapper"
-                        id="simple-interestGroup"
-                      >
-                        <label for="simple-interest" class="form-label"
-                          >Interés (I)</label
-                        >
-                        <div class="input-group">
-                          <span class="input-group-text"
-                            ><i class="fas fa-coins"></i
-                          ></span>
-                          <input
-                            type="number"
-                            class="form-control"
-                            id="simple-interest"
-                            placeholder="Ej: 1500"
-                            step="0.01"
-                            min="0"
-                          />
-                        </div>
-                        <div
-                          class="form-text"
-                          id="simple-interestFormatted"
-                        ></div>
-                        <div
-                          class="invalid-feedback"
-                          id="simple-interestError"
-                        ></div>
-                      </div>
-
-                      <!-- Amount -->
-                      <div
-                        class="mb-3 input-group-wrapper"
-                        id="simple-amountGroup"
-                      >
-                        <label for="simple-amount" class="form-label"
-                          >Monto (M)</label
-                        >
-                        <div class="input-group">
-                          <span class="input-group-text"
-                            ><i class="fas fa-money-bill-wave"></i
-                          ></span>
-                          <input
-                            type="number"
-                            class="form-control"
-                            id="simple-amount"
-                            placeholder="Ej: 11500"
-                            step="0.01"
-                            min="0"
-                          />
-                        </div>
-                        <div
-                          class="form-text"
-                          id="simple-amountFormatted"
-                        ></div>
-                        <div
-                          class="invalid-feedback"
-                          id="simple-amountError"
-                        ></div>
-                      </div>
-                    </div>
-
-                    <!-- Formula Display -->
-                    <div
-                      class="mb-4"
-                      id="simple-formulaSection"
-                      style="display: none"
-                    >
-                      <label class="form-label fw-bold">
-                        <i class="fas fa-square-root-alt me-2"></i>Fórmula que
-                        se va a usar:
-                      </label>
-                      <div id="simple-formulaDisplay" class="formula-box">
-                        Selecciona una incógnita e ingresa valores para
-                        determinar la fórmula.
-                      </div>
-                      <small class="text-muted"
-                        >La fórmula se selecciona automáticamente según los
-                        datos disponibles.</small
-                      >
-                    </div>
-
-                    <!-- Buttons -->
-                    <div
-                      class="d-grid gap-2 d-md-flex justify-content-md-center"
-                    >
-                      <button
-                        type="submit"
-                        class="btn btn-primary btn-lg px-5"
-                        id="simple-evaluateBtn"
-                        disabled
-                      >
-                        <i class="fas fa-play me-2"></i>Calcular
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-secondary btn-lg px-5"
-                        id="simple-resetBtn"
-                      >
-                        <i class="fas fa-redo me-2"></i>Limpiar
-                      </button>
-                    </div>
-                  </form>
-
-                  <!-- Result Section -->
-                  <div
-                    id="simple-resultSection"
-                    class="mt-4"
-                    style="display: none"
-                  >
-                    <div class="alert" id="simple-resultAlert" role="alert">
-                      <h5 class="alert-heading" id="simple-resultTitle"></h5>
-                      <hr />
-                      <p class="mb-0" id="simple-resultMessage"></p>
-                      <div id="simple-resultDetails" class="mt-3"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Footer Info -->
-              <div class="text-center mt-4">
-                <small class="text-muted">
-                  <i class="fas fa-info-circle me-1"></i>
-                  Ingresa 3 valores conocidos para calcular la incógnita
-                  seleccionada
-                </small>
-              </div>
+              <iframe
+                src="simple/index.html"
+                class="w-100 border-0"
+                style="min-height: 900px"
+              ></iframe>
             </div>
 
             <!-- Tab: Calculadora de interés compuesto -->
@@ -350,20 +105,11 @@
               aria-labelledby="tab-formulas-tab"
               tabindex="0"
             >
-              <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                  <h5 class="mb-0">
-                    <i class="fas fa-chart-line me-2"></i>Calculadora de interés
-                    compuesto
-                  </h5>
-                </div>
-                <div class="card-body">
-                  <p class="mb-0">
-                    Próximamente: aquí podrás calcular montos y variables bajo
-                    interés compuesto.
-                  </p>
-                </div>
-              </div>
+              <iframe
+                src="compound/index.html"
+                class="w-100 border-0"
+                style="min-height: 900px"
+              ></iframe>
             </div>
 
             <!-- Tab: Simulador de crédito bancario -->
@@ -374,67 +120,11 @@
               aria-labelledby="tab-historial-tab"
               tabindex="0"
             >
-              <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                  <h5 class="mb-0">
-                    <i class="fas fa-landmark me-2"></i>Simulador de crédito
-                    bancario
-                  </h5>
-                </div>
-                <div class="card-body">
-                  <p class="mb-0">
-                    Próximamente: simula cuotas, plazos y tasas de un crédito
-                    bancario.
-                  </p>
-                </div>
-              </div>
-              <!-- History Card -->
-              <div
-                class="card shadow-sm"
-                id="historyCard"
-                style="display: none"
-              >
-                <div
-                  class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
-                >
-                  <h5 class="mb-0">
-                    <i class="fas fa-history me-2"></i>Historial de cálculos
-                  </h5>
-                  <div class="btn-group">
-                    <button
-                      class="btn btn-light btn-sm"
-                      id="exportHistoryBtn"
-                      title="Exportar CSV"
-                    >
-                      <i class="fas fa-file-export me-1"></i>Exportar
-                    </button>
-                    <button
-                      class="btn btn-outline-light btn-sm"
-                      id="clearHistoryBtn"
-                      title="Limpiar historial"
-                    >
-                      <i class="fas fa-trash me-1"></i>Limpiar
-                    </button>
-                  </div>
-                </div>
-                <div class="card-body p-0">
-                  <div class="table-responsive">
-                    <table class="table table-striped mb-0" id="historyTable">
-                      <thead class="table-light">
-                        <tr>
-                          <th style="white-space: nowrap">Fecha/Hora</th>
-                          <th>Tipo</th>
-                          <th>Incógnita</th>
-                          <th>Fórmula</th>
-                          <th>Resultado</th>
-                          <th>Datos</th>
-                        </tr>
-                      </thead>
-                      <tbody></tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+              <iframe
+                src="credit/index.html"
+                class="w-100 border-0"
+                style="min-height: 900px"
+              ></iframe>
             </div>
           </div>
         </div>
@@ -443,11 +133,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Shared utilities and history management -->
+    <!-- Shared utilities (main page helpers) -->
     <script src="shared-utils.js"></script>
-    <!-- Independent calculator modules -->
-    <script src="simple-calculator.js"></script>
-    <script src="compound-calculator.js"></script>
-    <script src="credit-simulator.js"></script>
   </body>
 </html>
