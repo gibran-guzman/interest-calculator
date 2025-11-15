@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interés Compuesto</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Elms+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container py-3">
+      <div class="card shadow-lg">
+        <div class="card-body p-4">
+          <form id="compound-calculatorForm">
+            <div class="mb-4">
+              <label for="compound-unknownVariable" class="form-label fw-bold">
+                <i class="fas fa-question-circle me-2"></i>Selecciona la
+                incógnita a calcular (compuesto):
+              </label>
+              <select
+                class="form-select form-select-lg"
+                id="compound-unknownVariable"
+                required
+              >
+                <option value="">-- Selecciona una incógnita --</option>
+                <option value="C">Capital (C)</option>
+                <option value="i">Tasa de interés anual (i)</option>
+                <option value="n">Tiempo en años (n)</option>
+                <option value="I">Interés (I)</option>
+                <option value="M">Monto (M)</option>
+              </select>
+            </div>
+
+            <div id="compound-inputFields" class="mb-4">
+              <div
+                class="mb-3 input-group-wrapper"
+                id="compound-capitalizationGroup"
+              >
+                <label for="compound-capitalization" class="form-label"
+                  >Capitalización por año (m)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-sync-alt"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="compound-capitalization"
+                    placeholder="Ej: 1 (anual), 12 (mensual), 4 (trimestral)"
+                    step="1"
+                    min="1"
+                  />
+                </div>
+                <div class="form-text" id="compound-capitalizationFormatted">
+                  Número de veces que se capitaliza el interés por año. Ejemplo:
+                  1=anual, 12=mensual, 4=trimestral.
+                </div>
+                <div
+                  class="invalid-feedback"
+                  id="compound-capitalizationError"
+                ></div>
+              </div>
+              <div class="mb-3 input-group-wrapper" id="compound-capitalGroup">
+                <label for="compound-capital" class="form-label"
+                  >Capital (C)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-dollar-sign"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="compound-capital"
+                    placeholder="Ej: 10000"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <div class="form-text" id="compound-capitalFormatted"></div>
+                <div class="invalid-feedback" id="compound-capitalError"></div>
+              </div>
+
+              <div class="mb-3 input-group-wrapper" id="compound-rateGroup">
+                <label for="compound-interestRate" class="form-label"
+                  >Tasa de interés anual (%)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-percent"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="compound-interestRate"
+                    placeholder="Ej: 5"
+                    step="0.0001"
+                    min="0"
+                  />
+                </div>
+                <div class="form-text" id="compound-rateFormatted"></div>
+                <div class="invalid-feedback" id="compound-rateError"></div>
+              </div>
+
+              <div class="mb-3 input-group-wrapper" id="compound-timeGroup">
+                <label for="compound-time" class="form-label"
+                  >Tiempo (años)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-clock"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="compound-time"
+                    placeholder="Ej: 3"
+                    step="0.01"
+                    min="0"
+                  />
+                  <select
+                    class="form-select"
+                    id="compound-timeUnit"
+                    style="max-width: 150px"
+                  >
+                    <option value="years" selected>Años</option>
+                    <option value="months">Meses</option>
+                    <option value="days">Días</option>
+                  </select>
+                </div>
+                <div class="form-text" id="compound-timeFormatted"></div>
+                <div class="invalid-feedback" id="compound-timeError"></div>
+              </div>
+
+              <div class="mb-3 input-group-wrapper" id="compound-interestGroup">
+                <label for="compound-interest" class="form-label"
+                  >Interés (I)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-coins"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="compound-interest"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <div class="form-text" id="compound-interestFormatted"></div>
+                <div class="invalid-feedback" id="compound-interestError"></div>
+              </div>
+
+              <div class="mb-3 input-group-wrapper" id="compound-amountGroup">
+                <label for="compound-amount" class="form-label"
+                  >Monto (M)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text"
+                    ><i class="fas fa-money-bill-wave"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="compound-amount"
+                    placeholder="Ej: 11576.25"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <div class="form-text" id="compound-amountFormatted"></div>
+                <div class="invalid-feedback" id="compound-amountError"></div>
+              </div>
+            </div>
+
+            <div
+              class="mb-4"
+              id="compound-formulaSection"
+              style="display: none"
+            >
+              <label class="form-label fw-bold">
+                <i class="fas fa-square-root-alt me-2"></i>Fórmula que se va a
+                usar (compuesto):
+              </label>
+              <div id="compound-formulaDisplay" class="formula-box">
+                Selecciona una incógnita e ingresa valores para determinar la
+                fórmula.
+              </div>
+              <small class="text-muted"
+                >Se asume capitalización anual: M = C (1 + i)^n</small
+              >
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg px-5"
+                id="compound-evaluateBtn"
+                disabled
+              >
+                <i class="fas fa-play me-2"></i>Calcular
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary btn-lg px-5"
+                id="compound-resetBtn"
+              >
+                <i class="fas fa-redo me-2"></i>Limpiar
+              </button>
+            </div>
+          </form>
+
+          <div id="compound-resultSection" class="mt-4" style="display: none">
+            <div class="alert" id="compound-resultAlert" role="alert">
+              <h5 class="alert-heading" id="compound-resultTitle"></h5>
+              <hr />
+              <p class="mb-0" id="compound-resultMessage"></p>
+              <div id="compound-resultDetails" class="mt-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <small class="text-muted"
+          ><i class="fas fa-info-circle me-1"></i>Ingresa los valores conocidos
+          (mínimo 2 + 1 derivado) para calcular la incógnita seleccionada</small
+        >
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../shared-utils.js"></script>
+    <script src="compound-calculator.js"></script>
+  </body>
+</html>
