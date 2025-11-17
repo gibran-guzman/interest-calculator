@@ -1,52 +1,27 @@
-body {
-  background: #5e6893;
-  font-family: "Elms Sans", Arial, sans-serif !important;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-label,
-input,
-select,
-button,
-.card,
-.form-label,
-.form-control,
-.input-group-text,
-.btn,
-.formula-box,
-.alert,
-.table,
-.table th,
-.table td,
-small,
-.form-text {
-  font-family: "Elms Sans", Arial, sans-serif !important;
-}
+/* ============================================
+   ESTILOS ESPECÍFICOS - Calculadora Interés Simple
+   Solo estilos únicos de este módulo
+   ============================================ */
+
+/* Formula box con tema oscuro */
 .formula-box {
   background: #1e1a4d;
   color: #fff;
   border-radius: 8px;
   padding: 12px;
 }
-.input-group-text {
+
+/* Input group text con tema oscuro para simple */
+#simple-calculatorForm .input-group-text {
   background: #23145b;
   color: #fff;
 }
-.btn-primary {
-  background: #23145b;
-  border-color: #23145b;
-}
-.card {
-  box-shadow: 0 0.5rem 1rem rgba(202, 213, 226, 0.35) !important;
-}
-/* Disabled unknown input visual */
+
+/* Estados deshabilitados para campos de incógnita */
 .input-group-wrapper.disabled label {
   opacity: 0.7;
 }
+
 .input-group-wrapper.disabled input,
 .input-group-wrapper.disabled select {
   background: #839cb5 !important;
@@ -54,10 +29,12 @@ small,
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .input-group-wrapper.disabled .input-group-text {
   filter: grayscale(40%);
   opacity: 0.7;
 }
+
 .input-group-wrapper.disabled .form-text {
   display: none;
 }
