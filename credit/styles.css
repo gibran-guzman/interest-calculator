@@ -1,31 +1,92 @@
-body {
-  background: #5e6893;
-  font-family: "Elms Sans", Arial, sans-serif !important;
+/* ============================================
+   ESTILOS ESPECÍFICOS - Simulador de Crédito Bancario
+   Solo estilos únicos de este módulo
+   ============================================ */
+
+/* Alinear color de íconos de inputs con la calculadora de interés simple */
+#creditForm .input-group-text {
+  background: var(--color-accent);
+  color: var(--text-light);
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-label,
-input,
-select,
-button,
-.card,
-.form-label,
-.form-control,
-.input-group-text,
-.btn,
-.formula-box,
-.alert,
-.table,
-.table th,
-.table td,
-small,
-.form-text {
-  font-family: "Elms Sans", Arial, sans-serif !important;
+
+/* Info section: usar color sólido #23145B */
+#creditForm + .alert.alert-info {
+  background: #23145b !important;
+  color: #fff;
+  border-color: #23145b !important;
 }
-.card {
-  box-shadow: 0 0.5rem 1rem rgba(202, 213, 226, 0.35) !important;
+
+/* Asegurar visibilidad del botón de cierre sobre fondo oscuro */
+#creditForm + .alert.alert-info .btn-close {
+  filter: invert(1);
+}
+
+/* Resumen del crédito con hover effects */
+#resultsSection .bg-light {
+  background-color: #f8f9fa !important;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+#resultsSection .bg-light:hover {
+  background-color: #e9ecef !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tabla de amortización */
+.table-responsive {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.table thead th {
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 1rem;
+  text-align: center;
+}
+
+.table tbody td {
+  padding: 0.9rem;
+  text-align: center;
+  vertical-align: middle;
+  border-color: #dee2e6;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(102, 126, 234, 0.05);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(102, 126, 234, 0.1);
+  cursor: pointer;
+}
+
+/* Animación para resultados */
+#resultsSection {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Responsive específico para crédito */
+@media (max-width: 768px) {
+  #resultsSection .col-md-3 {
+    margin-bottom: 1rem;
+  }
+
+  .table thead th,
+  .table tbody td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
 }

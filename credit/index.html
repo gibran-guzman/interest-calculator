@@ -12,6 +12,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <link rel="stylesheet" href="../shared-styles.css" />
     <link rel="stylesheet" href="styles.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Elms+Sans:wght@400;700&display=swap"
@@ -19,15 +20,259 @@
     />
   </head>
   <body>
-    <div class="container py-5">
-      <div class="text-center text-white">
-        <h3 class="fw-bold mb-3">
-          <i class="fas fa-landmark me-2"></i>Simulador de crédito bancario
-        </h3>
-        <p class="mb-0">Módulo limpio y listo para una nueva implementación.</p>
+    <div class="container py-4">
+      <div class="text-center text-white mb-4">
+        <p class="mb-0">Calcula tus cuotas con tabla francesa o alemana</p>
+      </div>
+
+      <!-- Formulario de entrada -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title mb-4">
+            <i class="fas fa-calculator me-2"></i>Datos del Crédito
+          </h5>
+          <form id="creditForm">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="creditAmount" class="form-label">
+                  Monto del Crédito (C)
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="creditAmount"
+                    placeholder="Ej: 100000"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
+                <small class="form-text text-muted">
+                  Monto total del préstamo
+                </small>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="interestRate" class="form-label">
+                  Tasa de Interés Anual (%)
+                </label>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="interestRate"
+                    placeholder="Ej: 12"
+                    step="0.01"
+                    min="0"
+                  />
+                  <span class="input-group-text">%</span>
+                </div>
+                <small class="form-text text-muted">
+                  Tasa de interés anual del crédito
+                </small>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="timeYears" class="form-label">
+                  Tiempo en Años
+                </label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="timeYears"
+                  placeholder="Ej: 5"
+                  step="0.1"
+                  min="0"
+                />
+                <small class="form-text text-muted">
+                  Plazo del crédito en años
+                </small>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="paymentsPerYear" class="form-label">
+                  Número de Pagos por Año (m)
+                </label>
+                <select class="form-select" id="paymentsPerYear">
+                  <option value="1">Anual (1)</option>
+                  <option value="2">Semestral (2)</option>
+                  <option value="3">Cuatrimestral (3)</option>
+                  <option value="4">Trimestral (4)</option>
+                  <option value="6">Bimestral (6)</option>
+                  <option value="12" selected>Mensual (12)</option>
+                </select>
+                <small class="form-text text-muted">
+                  Frecuencia de los pagos
+                </small>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Tipo de Tabla</label>
+                <div class="d-flex gap-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="tableType"
+                      id="frenchTable"
+                      value="french"
+                      checked
+                    />
+                    <label class="form-check-label" for="frenchTable">
+                      Tabla Francesa
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="tableType"
+                      id="germanTable"
+                      value="german"
+                    />
+                    <label class="form-check-label" for="germanTable">
+                      Tabla Alemana
+                    </label>
+                  </div>
+                </div>
+                <small class="form-text text-muted">
+                  Selecciona el método de amortización
+                </small>
+              </div>
+
+              <div class="col-md-6 mb-3 d-flex align-items-end">
+                <div class="d-flex w-100 gap-2">
+                  <button
+                    type="submit"
+                    class="btn btn-primary flex-fill"
+                    id="calculateBtn"
+                  >
+                    <i class="fas fa-chart-line me-2"></i>Calcular Cuotas
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary flex-fill"
+                    id="clearBtn"
+                  >
+                    <i class="fas fa-eraser me-2"></i>Limpiar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <!-- Descripción de las tablas -->
+          <div class="alert alert-info mt-3" role="alert">
+            <strong><i class="fas fa-info-circle me-2"></i>Información:</strong>
+            <ul class="mb-0 mt-2">
+              <li>
+                <strong>Tabla Francesa:</strong> Cuotas constantes durante todo
+                el período. Los intereses disminuyen y el capital aumenta con
+                cada pago.
+              </li>
+              <li>
+                <strong>Tabla Alemana:</strong> Cuotas de capital constantes.
+                Los intereses se calculan sobre el saldo restante, por lo que la
+                cuota total disminuye con el tiempo.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área de resultados -->
+      <div id="resultsSection" style="display: none">
+        <!-- Resumen del crédito -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title mb-3">
+              <i class="fas fa-file-invoice-dollar me-2"></i>Resumen del Crédito
+            </h5>
+            <div class="row">
+              <div class="col-md-3">
+                <div class="p-3 bg-light rounded text-center">
+                  <small class="text-muted d-block">Monto del Crédito</small>
+                  <strong class="fs-5" id="summaryAmount">$0</strong>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="p-3 bg-light rounded text-center">
+                  <small class="text-muted d-block">Total de Intereses</small>
+                  <strong class="fs-5 text-danger" id="summaryInterests"
+                    >$0</strong
+                  >
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="p-3 bg-light rounded text-center">
+                  <small class="text-muted d-block">Total a Pagar</small>
+                  <strong class="fs-5 text-success" id="summaryTotal"
+                    >$0</strong
+                  >
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="p-3 bg-light rounded text-center">
+                  <small class="text-muted d-block">Número de Cuotas</small>
+                  <strong class="fs-5" id="summaryPayments">0</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de amortización -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title mb-3">
+              <i class="fas fa-table me-2"></i>Tabla de Amortización
+              <span id="tableTypeTitle"></span>
+            </h5>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Cuota #</th>
+                    <th>Cuota Total</th>
+                    <th>Capital</th>
+                    <th>Intereses</th>
+                    <th>Saldo Restante</th>
+                  </tr>
+                </thead>
+                <tbody id="amortizationTableBody">
+                  <!-- Se llenará dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div
+        id="errorAlert"
+        class="alert alert-danger alert-dismissible fade"
+        role="alert"
+        style="display: none"
+      >
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span id="errorMessage"></span>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../shared-utils.js"></script>
+    <script src="credit-simulator.js"></script>
   </body>
 </html>
