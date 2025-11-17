@@ -1,477 +1,839 @@
+/**
+ * COMPOUND INTEREST CALCULATOR
+ * Calculadora de Interés Compuesto con Clean Code y SOLID
+ * Fórmula: M = C × (1 + i/m)^(m×n), donde I = M - C
+ * @version 2.0.0
+ */
+
 (function () {
   "use strict";
 
-  const unknownSelect = document.getElementById("compound-unknownVariable");
-  const form = document.getElementById("compound-calculatorForm");
-  const evaluateBtn = document.getElementById("compound-evaluateBtn");
-  const resetBtn = document.getElementById("compound-resetBtn");
+  // ============================================
+  // CONSTANTES Y CONFIGURACIÓN
+  // ============================================
+  const ELEMENTS = {
+    // Formulario y controles
+    unknownSelect: document.getElementById("compound-unknownVariable"),
+    form: document.getElementById("compound-calculatorForm"),
+    evaluateBtn: document.getElementById("compound-evaluateBtn"),
+    resetBtn: document.getElementById("compound-resetBtn"),
 
-  const capitalizationGroup = document.getElementById(
-    "compound-capitalizationGroup"
-  );
-  const capitalGroup = document.getElementById("compound-capitalGroup");
-  const rateGroup = document.getElementById("compound-rateGroup");
-  const timeGroup = document.getElementById("compound-timeGroup");
-  const interestGroup = document.getElementById("compound-interestGroup");
-  const amountGroup = document.getElementById("compound-amountGroup");
+    // Grupos de inputs
+    capitalizationGroup: document.getElementById(
+      "compound-capitalizationGroup"
+    ),
+    capitalGroup: document.getElementById("compound-capitalGroup"),
+    rateGroup: document.getElementById("compound-rateGroup"),
+    timeGroup: document.getElementById("compound-timeGroup"),
+    interestGroup: document.getElementById("compound-interestGroup"),
+    amountGroup: document.getElementById("compound-amountGroup"),
 
-  const capitalizationInput = document.getElementById(
-    "compound-capitalization"
-  );
-  const capitalInput = document.getElementById("compound-capital");
-  const rateInput = document.getElementById("compound-interestRate");
-  const timeInput = document.getElementById("compound-time");
-  const timeUnitSelect = document.getElementById("compound-timeUnit");
-  const interestInput = document.getElementById("compound-interest");
-  const amountInput = document.getElementById("compound-amount");
+    // Campos de entrada
+    capitalizationInput: document.getElementById("compound-capitalization"),
+    capitalInput: document.getElementById("compound-capital"),
+    rateInput: document.getElementById("compound-interestRate"),
+    timeInput: document.getElementById("compound-time"),
+    timeUnit: document.getElementById("compound-timeUnit"),
+    interestInput: document.getElementById("compound-interest"),
+    amountInput: document.getElementById("compound-amount"),
 
-  const capitalFormatted = document.getElementById("compound-capitalFormatted");
-  const rateFormatted = document.getElementById("compound-rateFormatted");
-  const timeFormatted = document.getElementById("compound-timeFormatted");
-  const interestFormatted = document.getElementById(
-    "compound-interestFormatted"
-  );
-  const amountFormatted = document.getElementById("compound-amountFormatted");
+    // Previsualizaciones formateadas
+    capitalFormatted: document.getElementById("compound-capitalFormatted"),
+    rateFormatted: document.getElementById("compound-rateFormatted"),
+    timeFormatted: document.getElementById("compound-timeFormatted"),
+    interestFormatted: document.getElementById("compound-interestFormatted"),
+    amountFormatted: document.getElementById("compound-amountFormatted"),
 
-  const formulaSection = document.getElementById("compound-formulaSection");
-  const formulaDisplay = document.getElementById("compound-formulaDisplay");
+    // Resultado
+    formulaSection: document.getElementById("compound-formulaSection"),
+    formulaDisplay: document.getElementById("compound-formulaDisplay"),
+    resultSection: document.getElementById("compound-resultSection"),
+    resultAlert: document.getElementById("compound-resultAlert"),
+    resultTitle: document.getElementById("compound-resultTitle"),
+    resultMessage: document.getElementById("compound-resultMessage"),
+    resultDetails: document.getElementById("compound-resultDetails"),
+  };
 
-  const resultSection = document.getElementById("compound-resultSection");
-  const resultAlert = document.getElementById("compound-resultAlert");
-  const resultTitle = document.getElementById("compound-resultTitle");
-  const resultMessage = document.getElementById("compound-resultMessage");
-  const resultDetails = document.getElementById("compound-resultDetails");
+  const CAPITALIZATION_FREQUENCIES = {
+    1: "Anual",
+    2: "Semestral",
+    4: "Trimestral",
+    12: "Mensual",
+    365: "Diaria",
+  };
 
-  const currencyFmt = new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "USD",
-  });
-  const percentFmt = new Intl.NumberFormat("es-ES", {
-    style: "percent",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 4,
-  });
+  const VARIABLE_LABELS = {
+    C: "Capital (C)",
+    i: "Tasa de Interés (i)",
+    n: "Tiempo (n)",
+    I: "Interés Compuesto (I)",
+    M: "Monto Final (M)",
+  };
 
-  let currentUnknown = "";
-  let lastResult = null;
-  let lastFormula = "";
+  // Estado de la calculadora
+  let state = {
+    unknown: "",
+    result: null,
+    formula: "",
+    details: null,
+  };
 
-  function toYears(v, unit) {
-    const x = parseFloat(v);
-    if (!isFinite(x) || x < 0) return null;
-    if (unit === "months") return x / 12;
-    if (unit === "days") return x / 365;
-    return x;
-  }
+  // ============================================
+  // CLASE: CompoundInterestCalculator
+  // Responsabilidad: Cálculos matemáticos
+  // ============================================
+  class CompoundInterestCalculator {
+    /**
+     * Calcula el monto final con interés compuesto
+     * @param {number} C - Capital
+     * @param {number} i - Tasa anual (decimal, 0.05 = 5%)
+     * @param {number} n - Tiempo en años
+     * @param {number} m - Frecuencia de capitalización anual
+     * @returns {number} Monto final
+     */
+    static calculateAmount(C, i, n, m) {
+      const base = 1 + i / m;
+      const exponent = m * n;
+      const M = C * Math.pow(base, exponent);
+      return roundMoney(M);
+    }
 
-  function updateFormatted() {
-    if (capitalFormatted) capitalFormatted.textContent = "";
-    if (rateFormatted) rateFormatted.textContent = "";
-    if (timeFormatted) timeFormatted.textContent = "";
-    const capFmt = document.getElementById("compound-capitalizationFormatted");
-    if (capFmt) capFmt.textContent = "";
-    if (interestFormatted) interestFormatted.textContent = "";
-    if (amountFormatted) amountFormatted.textContent = "";
-  }
+    /**
+     * Calcula el interés compuesto
+     * @param {number} C - Capital
+     * @param {number} i - Tasa anual (decimal)
+     * @param {number} n - Tiempo en años
+     * @param {number} m - Frecuencia de capitalización
+     * @returns {number} Interés compuesto
+     */
+    static calculateInterest(C, i, n, m) {
+      const M = this.calculateAmount(C, i, n, m);
+      return roundMoney(M - C);
+    }
 
-  function setDisabledForUnknown(unk) {
-    [
-      capitalInput,
-      rateInput,
-      timeInput,
-      interestInput,
-      amountInput,
-      capitalizationInput,
-    ].forEach((el) => {
-      if (el) {
-        el.disabled = false;
-        el.classList.remove("is-unknown");
+    /**
+     * Calcula el capital inicial
+     * @param {number} M - Monto final
+     * @param {number} i - Tasa anual (decimal)
+     * @param {number} n - Tiempo en años
+     * @param {number} m - Frecuencia de capitalización
+     * @returns {number} Capital inicial
+     */
+    static calculateCapital(M, i, n, m) {
+      const base = 1 + i / m;
+      const exponent = m * n;
+      const C = M / Math.pow(base, exponent);
+      return roundMoney(C);
+    }
+
+    /**
+     * Calcula la tasa de interés
+     * @param {number} M - Monto final
+     * @param {number} C - Capital
+     * @param {number} n - Tiempo en años
+     * @param {number} m - Frecuencia de capitalización
+     * @returns {number} Tasa anual (decimal)
+     */
+    static calculateRate(M, C, n, m) {
+      if (C === 0 || n === 0 || m === 0) {
+        throw new Error(
+          "El capital, tiempo y frecuencia deben ser mayores que cero"
+        );
       }
-    });
-    if (timeUnitSelect) timeUnitSelect.disabled = false;
-    [
-      capitalGroup,
-      rateGroup,
-      timeGroup,
-      interestGroup,
-      amountGroup,
-      capitalizationGroup,
-    ].forEach((g) => g && g.classList.remove("disabled"));
-
-    if (!unk) return;
-
-    const disableField = (group, input, alsoDisableUnit = false) => {
-      if (group) group.classList.add("disabled");
-      if (input) {
-        input.value = "";
-        input.disabled = true;
-        input.classList.add("is-unknown");
+      if (M <= C) {
+        throw new Error("El monto final debe ser mayor que el capital");
       }
-      if (alsoDisableUnit && timeUnitSelect) timeUnitSelect.disabled = true;
-    };
 
-    switch (unk) {
-      case "C":
-        disableField(capitalGroup, capitalInput);
-        break;
-      case "i":
-        disableField(rateGroup, rateInput);
-        break;
-      case "n":
-        disableField(timeGroup, timeInput, true);
-        break;
-      case "I":
-        disableField(interestGroup, interestInput);
-        break;
-      case "M":
-        disableField(amountGroup, amountInput);
-        break;
-      case "m":
-        disableField(capitalizationGroup, capitalizationInput);
-        break;
+      const exponent = 1 / (m * n);
+      const ratio = M / C;
+      const i = m * (Math.pow(ratio, exponent) - 1);
+
+      return roundToDecimals(i, 6);
+    }
+
+    /**
+     * Calcula el tiempo necesario
+     * @param {number} M - Monto final
+     * @param {number} C - Capital
+     * @param {number} i - Tasa anual (decimal)
+     * @param {number} m - Frecuencia de capitalización
+     * @returns {number} Tiempo en años
+     */
+    static calculateTime(M, C, i, m) {
+      if (C === 0 || i === 0 || m === 0) {
+        throw new Error(
+          "El capital, tasa y frecuencia deben ser mayores que cero"
+        );
+      }
+      if (M <= C) {
+        throw new Error("El monto final debe ser mayor que el capital");
+      }
+
+      const ratio = M / C;
+      const base = 1 + i / m;
+      const n = Math.log(ratio) / (m * Math.log(base));
+
+      return roundToDecimals(n, 4);
+    }
+
+    /**
+     * Calcula el interés desde el monto
+     * @param {number} M - Monto final
+     * @param {number} C - Capital
+     * @returns {number} Interés
+     */
+    static calculateInterestFromAmount(M, C) {
+      return roundMoney(M - C);
+    }
+
+    /**
+     * Calcula el capital desde el interés
+     * @param {number} I - Interés
+     * @param {number} i - Tasa anual (decimal)
+     * @param {number} n - Tiempo en años
+     * @param {number} m - Frecuencia de capitalización
+     * @returns {number} Capital
+     */
+    static calculateCapitalFromInterest(I, i, n, m) {
+      // C + I = C × (1 + i/m)^(mn)
+      // I = C × [(1 + i/m)^(mn) - 1]
+      // C = I / [(1 + i/m)^(mn) - 1]
+
+      const base = 1 + i / m;
+      const exponent = m * n;
+      const multiplier = Math.pow(base, exponent) - 1;
+
+      if (multiplier <= 0) {
+        throw new Error("Configuración inválida para calcular el capital");
+      }
+
+      const C = I / multiplier;
+      return roundMoney(C);
     }
   }
 
-  function have(v) {
-    return isFinite(v) && v !== null;
-  }
+  // ============================================
+  // CLASE: InputValidator
+  // Responsabilidad: Validación de entradas
+  // ============================================
+  class InputValidator {
+    /**
+     * Valida los inputs del formulario
+     * @param {string} unknown - Variable desconocida
+     * @returns {Object} {isValid, values, errors}
+     */
+    static validateInputs(unknown) {
+      const values = {};
+      const errors = {};
+      let isValid = true;
 
-  function compute() {
-    const unk = currentUnknown;
-    const C = parseFloat(capitalInput.value);
-    const iPct = parseFloat(rateInput.value);
-    const i = isFinite(iPct) ? iPct / 100 : NaN;
-    const nRaw = parseFloat(timeInput.value);
-    const n = toYears(nRaw, timeUnitSelect.value);
-    const m = parseInt(capitalizationInput.value);
-    const I = parseFloat(interestInput.value);
-    const M = parseFloat(amountInput.value);
+      try {
+        // Frecuencia de capitalización (siempre necesaria)
+        values.m = validatePositiveInteger(
+          ELEMENTS.capitalizationInput.value,
+          "Frecuencia de capitalización"
+        );
 
-    let result = null;
-    let formula = "";
-    let derivation = "";
+        // Validar según la variable desconocida
+        switch (unknown) {
+          case "C":
+            values.i =
+              validatePercentage(ELEMENTS.rateInput.value, "Tasa de interés") /
+              100;
+            values.n = convertToYears(
+              validatePositiveNumber(ELEMENTS.timeInput.value, "Tiempo"),
+              ELEMENTS.timeUnit.value
+            );
+            values.M = validatePositiveNumber(
+              ELEMENTS.amountInput.value,
+              "Monto final"
+            );
+            break;
 
-    // Fórmulas generales con m
-    // M = C * (1 + i/m)^(m*n)
-    // I = C * [ (1 + i/m)^(m*n) - 1 ]
-    if (unk === "M") {
-      if (have(C) && have(i) && have(n) && have(m) && m > 0) {
-        const val = C * Math.pow(1 + i / m, m * n);
-        result = val;
-        formula = "M = C · (1 + i/m)^(m·n)";
-        derivation = `M = ${C} × (1 + ${i.toFixed(6)}/${m})^(${m}×${n.toFixed(
-          4
-        )}) = ${val.toFixed(6)}`;
-      }
-    } else if (unk === "C") {
-      if (have(M) && have(i) && have(n) && have(m) && m > 0) {
-        const denom = Math.pow(1 + i / m, m * n);
-        const val = M / denom;
-        result = val;
-        formula = "C = M / (1 + i/m)^(m·n)";
-        derivation = `C = ${M} / (1 + ${i.toFixed(6)}/${m})^(${m}×${n.toFixed(
-          4
-        )}) = ${val.toFixed(6)}`;
-      }
-    } else if (unk === "i") {
-      if (
-        have(M) &&
-        have(C) &&
-        have(n) &&
-        have(m) &&
-        C > 0 &&
-        M > 0 &&
-        n > 0 &&
-        m > 0
-      ) {
-        const base = M / C;
-        if (base > 0) {
-          const val = m * (Math.pow(base, 1 / (m * n)) - 1);
-          result = val;
-          formula = "i = m · [ (M/C)^(1/(m·n)) - 1 ]";
-          derivation = `i = ${m} × [ (${M}/${C})^(1/(${m}×${n.toFixed(
-            4
-          )})) - 1 ] = ${val.toFixed(6)}`;
+          case "i":
+            values.C = validatePositiveNumber(
+              ELEMENTS.capitalInput.value,
+              "Capital"
+            );
+            values.n = convertToYears(
+              validatePositiveNumber(ELEMENTS.timeInput.value, "Tiempo"),
+              ELEMENTS.timeUnit.value
+            );
+            values.M = validatePositiveNumber(
+              ELEMENTS.amountInput.value,
+              "Monto final"
+            );
+            break;
+
+          case "n":
+            values.C = validatePositiveNumber(
+              ELEMENTS.capitalInput.value,
+              "Capital"
+            );
+            values.i =
+              validatePercentage(ELEMENTS.rateInput.value, "Tasa de interés") /
+              100;
+            values.M = validatePositiveNumber(
+              ELEMENTS.amountInput.value,
+              "Monto final"
+            );
+            break;
+
+          case "I":
+            values.C = validatePositiveNumber(
+              ELEMENTS.capitalInput.value,
+              "Capital"
+            );
+            values.i =
+              validatePercentage(ELEMENTS.rateInput.value, "Tasa de interés") /
+              100;
+            values.n = convertToYears(
+              validatePositiveNumber(ELEMENTS.timeInput.value, "Tiempo"),
+              ELEMENTS.timeUnit.value
+            );
+            break;
+
+          case "M":
+            values.C = validatePositiveNumber(
+              ELEMENTS.capitalInput.value,
+              "Capital"
+            );
+            values.i =
+              validatePercentage(ELEMENTS.rateInput.value, "Tasa de interés") /
+              100;
+            values.n = convertToYears(
+              validatePositiveNumber(ELEMENTS.timeInput.value, "Tiempo"),
+              ELEMENTS.timeUnit.value
+            );
+            break;
+
+          default:
+            throw new Error("Debe seleccionar una variable a calcular");
         }
+      } catch (error) {
+        isValid = false;
+        errors.general = error.message;
       }
-    } else if (unk === "n") {
-      if (
-        have(M) &&
-        have(C) &&
-        have(i) &&
-        have(m) &&
-        C > 0 &&
-        i > -1 &&
-        m > 0
-      ) {
-        const base = M / C;
-        if (base > 0 && base !== 1 && 1 + i / m !== 1) {
-          const val = Math.log(base) / (m * Math.log(1 + i / m));
-          result = val;
-          formula = "n = ln(M/C) / [m · ln(1 + i/m)]";
-          derivation = `n = ln(${M}/${C}) / [${m} × ln(1 + ${i.toFixed(
-            6
-          )}/${m})] = ${val.toFixed(6)} años`;
+
+      return { isValid, values, errors };
+    }
+  }
+
+  // ============================================
+  // CLASE: FormulaGenerator
+  // Responsabilidad: Generar fórmulas
+  // ============================================
+  class FormulaGenerator {
+    /**
+     * Genera la fórmula correspondiente
+     * @param {string} unknown - Variable desconocida
+     * @param {Object} values - Valores conocidos
+     * @returns {string} Fórmula generada
+     */
+    static generate(unknown, values) {
+      const formulas = {
+        C: () => this.generateCapitalFormula(values),
+        i: () => this.generateRateFormula(values),
+        n: () => this.generateTimeFormula(values),
+        I: () => this.generateInterestFormula(values),
+        M: () => this.generateAmountFormula(values),
+      };
+
+      return formulas[unknown] ? formulas[unknown]() : "";
+    }
+
+    static generateCapitalFormula(values) {
+      const { M, i, n, m } = values;
+      return `C = M / (1 + i/m)<sup>m×n</sup> = ${formatCurrency(
+        M
+      )} / (1 + ${formatPercentage(i * 100)}/${m})<sup>${m}×${formatNumberTrim(
+        n,
+        2
+      )}</sup>`;
+    }
+
+    static generateRateFormula(values) {
+      const { M, C, n, m } = values;
+      return `i = m × [(M/C)<sup>1/(m×n)</sup> - 1] = ${m} × [(${formatCurrency(
+        M
+      )}/${formatCurrency(C)})<sup>1/(${m}×${formatNumberTrim(
+        n,
+        2
+      )})</sup> - 1]`;
+    }
+
+    static generateTimeFormula(values) {
+      const { M, C, i, m } = values;
+      return `n = ln(M/C) / [m × ln(1 + i/m)] = ln(${formatCurrency(
+        M
+      )}/${formatCurrency(C)}) / [${m} × ln(1 + ${formatPercentage(
+        i * 100
+      )}/${m})]`;
+    }
+
+    static generateInterestFormula(values) {
+      const { C, i, n, m } = values;
+      return `I = C × [(1 + i/m)<sup>m×n</sup> - 1] = ${formatCurrency(
+        C
+      )} × [(1 + ${formatPercentage(i * 100)}/${m})<sup>${m}×${formatNumberTrim(
+        n,
+        2
+      )}</sup> - 1]`;
+    }
+
+    static generateAmountFormula(values) {
+      const { C, i, n, m } = values;
+      return `M = C × (1 + i/m)<sup>m×n</sup> = ${formatCurrency(
+        C
+      )} × (1 + ${formatPercentage(i * 100)}/${m})<sup>${m}×${formatNumberTrim(
+        n,
+        2
+      )}</sup>`;
+    }
+  }
+
+  // ============================================
+  // CLASE: UIController
+  // Responsabilidad: Control de la interfaz
+  // ============================================
+  class UIController {
+    /**
+     * Actualiza la visibilidad de los grupos de inputs
+     * @param {string} unknown - Variable desconocida
+     */
+    static updateInputGroups(unknown) {
+      const groups = {
+        C: ELEMENTS.capitalGroup,
+        i: ELEMENTS.rateGroup,
+        n: ELEMENTS.timeGroup,
+        I: ELEMENTS.interestGroup,
+        M: ELEMENTS.amountGroup,
+      };
+
+      // La frecuencia de capitalización siempre está visible
+      if (ELEMENTS.capitalizationGroup) {
+        ELEMENTS.capitalizationGroup.style.display = "block";
+      }
+
+      Object.entries(groups).forEach(([variable, group]) => {
+        if (group) {
+          const isUnknown = variable === unknown;
+          group.style.display = isUnknown ? "none" : "block";
+          group.setAttribute("aria-hidden", isUnknown ? "true" : "false");
+
+          if (isUnknown) {
+            const inputMap = {
+              C: "capitalInput",
+              i: "rateInput",
+              n: "timeInput",
+              I: "interestInput",
+              M: "amountInput",
+            };
+            const input = ELEMENTS[inputMap[variable]];
+            if (input) {
+              input.value = "";
+              clearInputValidation(input);
+            }
+          }
         }
-      }
-    } else if (unk === "I") {
-      if (have(M) && have(C)) {
-        const val = M - C;
-        result = val;
-        formula = "I = M - C";
-        derivation = `I = ${M} - ${C} = ${val.toFixed(6)}`;
-      } else if (have(C) && have(i) && have(n) && have(m) && m > 0) {
-        const Mcalc = C * Math.pow(1 + i / m, m * n);
-        const val = Mcalc - C;
-        result = val;
-        formula = "I = C · [ (1 + i/m)^(m·n) - 1 ]";
-        derivation = `I = ${C} × [ (1 + ${i.toFixed(6)}/${m})^(${m}×${n.toFixed(
-          4
-        )}) - 1 ] = ${val.toFixed(6)}`;
+      });
+    }
+
+    /**
+     * Muestra el resultado del cálculo
+     * @param {string} unknown - Variable calculada
+     * @param {number} result - Resultado numérico
+     * @param {string} formula - Fórmula usada
+     * @param {Object} details - Detalles adicionales
+     */
+    static showResult(unknown, result, formula, details) {
+      const variableName = VARIABLE_LABELS[unknown];
+      const formattedResult = this.formatResult(unknown, result);
+
+      toggleElement(ELEMENTS.formulaSection, true);
+      toggleElement(ELEMENTS.resultSection, true);
+
+      setElementHTML(ELEMENTS.formulaDisplay, formula);
+      setElementText(ELEMENTS.resultTitle, variableName);
+      setElementText(ELEMENTS.resultMessage, formattedResult);
+
+      // Mostrar detalles adicionales
+      this.showDetails(details);
+
+      ELEMENTS.resultSection.classList.remove("d-none");
+      ELEMENTS.resultSection.classList.add("fade-in");
+
+      smoothScrollTo(ELEMENTS.resultSection, "center");
+    }
+
+    /**
+     * Muestra detalles adicionales del cálculo
+     * @param {Object} details - Detalles del cálculo
+     */
+    static showDetails(details) {
+      if (!ELEMENTS.resultDetails) return;
+
+      const html = `
+        <p><strong>Capital:</strong> ${formatCurrency(details.C)}</p>
+        <p><strong>Tasa de Interés:</strong> ${formatPercentage(
+          details.i * 100
+        )}</p>
+        <p><strong>Tiempo:</strong> ${formatNumberTrim(details.n, 2)} años</p>
+        <p><strong>Capitalización:</strong> ${
+          CAPITALIZATION_FREQUENCIES[details.m] || details.m + " veces/año"
+        }</p>
+        <p><strong>Interés Ganado:</strong> ${formatCurrency(details.I)}</p>
+        <p><strong>Monto Final:</strong> ${formatCurrency(details.M)}</p>
+      `;
+
+      setElementHTML(ELEMENTS.resultDetails, html);
+      toggleElement(ELEMENTS.resultDetails, true);
+    }
+
+    /**
+     * Formatea el resultado según la variable
+     * @param {string} variable - Variable calculada
+     * @param {number} value - Valor a formatear
+     * @returns {string} Valor formateado
+     */
+    static formatResult(variable, value) {
+      switch (variable) {
+        case "C":
+        case "I":
+        case "M":
+          return formatCurrency(value);
+        case "i":
+          return formatPercentage(value * 100);
+        case "n":
+          return `${formatNumberTrim(value, 4)} años`;
+        default:
+          return formatNumberTrim(value, 4);
       }
     }
 
-    return {
-      result,
-      formula,
-      derivation,
-      inputs: { C, i, iPct, n, nRaw, nUnit: timeUnitSelect.value, m, I, M },
-    };
-  }
+    /**
+     * Actualiza las previsualizaciones formateadas
+     */
+    static updateFormattedPreviews() {
+      const previews = [
+        {
+          input: ELEMENTS.capitalInput,
+          preview: ELEMENTS.capitalFormatted,
+          formatter: (val) => formatCurrency(parseFloat(val)),
+        },
+        {
+          input: ELEMENTS.rateInput,
+          preview: ELEMENTS.rateFormatted,
+          formatter: (val) => formatPercentage(parseFloat(val)),
+        },
+        {
+          input: ELEMENTS.timeInput,
+          preview: ELEMENTS.timeFormatted,
+          formatter: (val) => {
+            const unit = ELEMENTS.timeUnit.value;
+            const unitLabels = { years: "años", months: "meses", days: "días" };
+            return `${formatNumberTrim(parseFloat(val), 2)} ${
+              unitLabels[unit] || "años"
+            }`;
+          },
+        },
+        {
+          input: ELEMENTS.interestInput,
+          preview: ELEMENTS.interestFormatted,
+          formatter: (val) => formatCurrency(parseFloat(val)),
+        },
+        {
+          input: ELEMENTS.amountInput,
+          preview: ELEMENTS.amountFormatted,
+          formatter: (val) => formatCurrency(parseFloat(val)),
+        },
+      ];
 
-  function canEvaluate() {
-    const unk = currentUnknown;
-    const C = parseFloat(capitalInput.value);
-    const iPct = parseFloat(rateInput.value);
-    const i = isFinite(iPct) ? iPct / 100 : NaN;
-    const n = toYears(parseFloat(timeInput.value), timeUnitSelect.value);
-    const m = parseInt(capitalizationInput.value);
-    const I = parseFloat(interestInput.value);
-    const M = parseFloat(amountInput.value);
-
-    if (!unk) return false;
-    switch (unk) {
-      case "M":
-        return (
-          isFinite(C) && isFinite(i) && isFinite(n) && isFinite(m) && m > 0
-        );
-      case "C":
-        return (
-          isFinite(M) && isFinite(i) && isFinite(n) && isFinite(m) && m > 0
-        );
-      case "i":
-        return (
-          isFinite(M) &&
-          isFinite(C) &&
-          isFinite(n) &&
-          isFinite(m) &&
-          C > 0 &&
-          M > 0 &&
-          n > 0 &&
-          m > 0
-        );
-      case "n":
-        return (
-          isFinite(M) &&
-          isFinite(C) &&
-          isFinite(i) &&
-          isFinite(m) &&
-          C > 0 &&
-          m > 0
-        );
-      case "I":
-        return (
-          (isFinite(M) && isFinite(C)) ||
-          (isFinite(C) && isFinite(i) && isFinite(n) && isFinite(m) && m > 0)
-        );
+      previews.forEach(({ input, preview, formatter }) => {
+        if (input && preview && input.value && isPositiveNumber(input.value)) {
+          try {
+            const formatted = formatter(input.value);
+            setElementText(preview, formatted);
+            toggleElement(preview, true);
+          } catch {
+            toggleElement(preview, false);
+          }
+        } else if (preview) {
+          toggleElement(preview, false);
+        }
+      });
     }
-    return false;
+
+    /**
+     * Actualiza la visualización de la fórmula
+     */
+    static updateFormulaDisplay() {
+      if (!state.unknown) {
+        toggleElement(ELEMENTS.formulaSection, false);
+        this.updateSubmitButton(false);
+        return;
+      }
+
+      const validation = InputValidator.validateInputs(state.unknown);
+      if (!validation.isValid) {
+        toggleElement(ELEMENTS.formulaSection, false);
+        this.updateSubmitButton(false);
+        return;
+      }
+
+      const formula = FormulaGenerator.generate(
+        state.unknown,
+        validation.values
+      );
+      setElementHTML(ELEMENTS.formulaDisplay, formula);
+      toggleElement(ELEMENTS.formulaSection, true);
+      this.updateSubmitButton(true);
+    }
+
+    /**
+     * Habilita o deshabilita el botón de submit
+     * @param {boolean} enable - True para habilitar
+     */
+    static updateSubmitButton(enable) {
+      if (ELEMENTS.evaluateBtn) {
+        ELEMENTS.evaluateBtn.disabled = !enable;
+      }
+    }
+
+    /**
+     * Oculta la sección de resultados
+     */
+    static hideResults() {
+      toggleElement(ELEMENTS.resultSection, false);
+      toggleElement(ELEMENTS.formulaSection, false);
+      this.updateSubmitButton(false);
+    }
   }
 
-  function updateFormulaPreview() {
-    const unk = currentUnknown;
-    if (!unk) {
-      formulaSection.style.display = "none";
+  // ============================================
+  // FUNCIONES DE EVENTOS
+  // ============================================
+
+  /**
+   * Maneja el cambio de variable desconocida
+   */
+  function handleUnknownChange() {
+    state.unknown = ELEMENTS.unknownSelect.value;
+    UIController.updateInputGroups(state.unknown);
+    UIController.hideResults();
+    UIController.updateFormattedPreviews();
+    UIController.updateFormulaDisplay();
+  }
+
+  /**
+   * Maneja el envío del formulario
+   * @param {Event} e - Evento de submit
+   */
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!state.unknown) {
+      showError(
+        ELEMENTS.resultAlert,
+        "Debe seleccionar una variable a calcular"
+      );
       return;
     }
-    formulaSection.style.display = "block";
-    let txt = "";
-    switch (unk) {
-      case "M":
-        txt = "M = C · (1 + i/m)^(m·n)";
-        break;
+
+    const validation = InputValidator.validateInputs(state.unknown);
+
+    if (!validation.isValid) {
+      showError(ELEMENTS.resultAlert, validation.errors.general);
+      return;
+    }
+
+    try {
+      const { result, details } = calculateVariable(
+        state.unknown,
+        validation.values
+      );
+      const formula = FormulaGenerator.generate(
+        state.unknown,
+        validation.values
+      );
+
+      state.result = result;
+      state.formula = formula;
+      state.details = details;
+
+      UIController.showResult(state.unknown, result, formula, details);
+
+      // Guardar en historial
+      saveCalculationToHistory({
+        type: "compound",
+        variable: state.unknown,
+        result: result,
+        formula: formula,
+        values: details,
+      });
+    } catch (error) {
+      showError(ELEMENTS.resultAlert, `Error en el cálculo: ${error.message}`);
+    }
+  }
+
+  /**
+   * Calcula la variable desconocida
+   * @param {string} unknown - Variable a calcular
+   * @param {Object} values - Valores conocidos
+   * @returns {Object} {result, details}
+   */
+  function calculateVariable(unknown, values) {
+    let result;
+    const { C, i, n, M, m } = values;
+    let details = { ...values };
+
+    switch (unknown) {
       case "C":
-        txt = "C = M / (1 + i/m)^(m·n)";
+        result = CompoundInterestCalculator.calculateCapital(M, i, n, m);
+        details.C = result;
+        details.I = CompoundInterestCalculator.calculateInterestFromAmount(
+          M,
+          result
+        );
         break;
+
       case "i":
-        txt = "i = m · [ (M/C)^(1/(m·n)) - 1 ]";
+        result = CompoundInterestCalculator.calculateRate(M, C, n, m);
+        details.i = result;
+        details.I = CompoundInterestCalculator.calculateInterest(
+          C,
+          result,
+          n,
+          m
+        );
         break;
+
       case "n":
-        txt = "n = ln(M/C) / [m · ln(1 + i/m)]";
+        result = CompoundInterestCalculator.calculateTime(M, C, i, m);
+        details.n = result;
+        details.I = CompoundInterestCalculator.calculateInterest(
+          C,
+          i,
+          result,
+          m
+        );
         break;
+
       case "I":
-        txt = "I = M - C = C · [ (1 + i/m)^(m·n) - 1 ]";
+        result = CompoundInterestCalculator.calculateInterest(C, i, n, m);
+        details.I = result;
+        details.M = CompoundInterestCalculator.calculateAmount(C, i, n, m);
         break;
-    }
-    formulaDisplay.textContent = txt + " (frecuencia de capitalización m)";
-  }
 
-  function saveHistory(payload) {
-    try {
-      if (typeof window.parent?.saveCalculationToHistory === "function") {
-        window.parent.saveCalculationToHistory(payload);
-        return;
-      }
-      if (typeof window.saveCalculationToHistory === "function") {
-        window.saveCalculationToHistory(payload);
-        return;
-      }
-    } catch {}
-    try {
-      const key = "ic_history";
-      const arr = JSON.parse(localStorage.getItem(key) || "[]");
-      arr.unshift(payload);
-      if (arr.length > 100) arr.length = 100;
-      localStorage.setItem(key, JSON.stringify(arr));
-    } catch {}
-  }
+      case "M":
+        result = CompoundInterestCalculator.calculateAmount(C, i, n, m);
+        details.M = result;
+        details.I = CompoundInterestCalculator.calculateInterestFromAmount(
+          result,
+          C
+        );
+        break;
 
-  function showResult(obj) {
-    const { result, formula, derivation, inputs } = obj;
-    if (!isFinite(result)) return;
-    lastResult = result;
-    lastFormula = formula;
-
-    resultSection.style.display = "block";
-    resultAlert.className = "alert alert-success";
-
-    const unk = currentUnknown;
-    let title = "";
-    let message = "";
-    if (unk === "i") {
-      title = "Resultado: Tasa de interés (i)";
-      message = `i = ${percentFmt.format(result)} (${(result * 100).toFixed(
-        4
-      )}%)`;
-    } else if (unk === "n") {
-      title = "Resultado: Tiempo (n)";
-      message = `n = ${result.toFixed(6)} años`;
-    } else if (unk === "C") {
-      title = "Resultado: Capital (C)";
-      message = `C = ${currencyFmt.format(result)}`;
-    } else if (unk === "M") {
-      title = "Resultado: Monto (M)";
-      message = `M = ${currencyFmt.format(result)}`;
-    } else if (unk === "I") {
-      title = "Resultado: Interés (I)";
-      message = `I = ${currencyFmt.format(result)}`;
+      default:
+        throw new Error("Variable desconocida no válida");
     }
 
-    resultTitle.textContent = title;
-    resultMessage.textContent = message;
-    resultDetails.innerHTML = `
-      <ul class="mb-2">
-        <li>Fórmula: <code>${formula}</code></li>
-        <li>Derivación: ${derivation}</li>
-      </ul>
-    `;
-
-    const payload = {
-      ts: Date.now(),
-      type: "compound",
-      unknown: currentUnknown,
-      formula,
-      result,
-      values: {
-        input: {
-          C: isFinite(inputs.C) ? inputs.C : undefined,
-          iPct: isFinite(inputs.iPct) ? inputs.iPct : undefined,
-          nInput: isFinite(inputs.nRaw) ? inputs.nRaw : undefined,
-          nUnit: inputs.nUnit,
-          I: isFinite(inputs.I) ? inputs.I : undefined,
-          M: isFinite(inputs.M) ? inputs.M : undefined,
-        },
-      },
-    };
-    saveHistory(payload);
+    return { result, details };
   }
 
-  function onEvaluate(e) {
-    e.preventDefault();
-    if (!canEvaluate()) return;
-    const out = compute();
-    if (isFinite(out.result)) {
-      showResult(out);
-    }
-  }
+  /**
+   * Resetea el formulario
+   */
+  function resetForm() {
+    ELEMENTS.form.reset();
+    state.unknown = "";
+    state.result = null;
+    state.formula = "";
+    state.details = null;
 
-  function onReset() {
+    UIController.hideResults();
+    UIController.updateFormattedPreviews();
+    UIController.updateSubmitButton(false);
+
+    // Mostrar todos los grupos
     [
-      capitalInput,
-      rateInput,
-      timeInput,
-      interestInput,
-      amountInput,
-      capitalizationInput,
-    ].forEach((el) => {
-      el.value = "";
-      el.disabled = false;
-      el.classList.remove("is-unknown");
-    });
-    [
-      capitalGroup,
-      rateGroup,
-      timeGroup,
-      interestGroup,
-      amountGroup,
-      capitalizationGroup,
-    ].forEach((g) => g && g.classList.remove("disabled"));
-    timeUnitSelect.value = "years";
-    timeUnitSelect.disabled = false;
-    resultSection.style.display = "none";
-    formulaSection.style.display = "none";
-    lastResult = null;
-    lastFormula = "";
-    updateFormatted();
-    updateEvaluateState();
-  }
-
-  function updateEvaluateState() {
-    updateFormatted();
-    updateFormulaPreview();
-    evaluateBtn.disabled = !canEvaluate();
-  }
-
-  function init() {
-    if (!form) return;
-    unknownSelect.addEventListener("change", () => {
-      currentUnknown = unknownSelect.value;
-      setDisabledForUnknown(currentUnknown);
-      updateEvaluateState();
-    });
-
-    [
-      capitalInput,
-      rateInput,
-      timeInput,
-      timeUnitSelect,
-      interestInput,
-      amountInput,
-      capitalizationInput,
-    ].forEach((el) => {
-      el && el.addEventListener("input", updateEvaluateState);
-      if (el && el.tagName === "SELECT") {
-        el.addEventListener("change", updateEvaluateState);
+      ELEMENTS.capitalizationGroup,
+      ELEMENTS.capitalGroup,
+      ELEMENTS.rateGroup,
+      ELEMENTS.timeGroup,
+      ELEMENTS.interestGroup,
+      ELEMENTS.amountGroup,
+    ].forEach((group) => {
+      if (group) {
+        group.style.display = "block";
+        group.setAttribute("aria-hidden", "false");
       }
     });
 
-    form.addEventListener("submit", onEvaluate);
-    resetBtn.addEventListener("click", onReset);
-
-    currentUnknown = unknownSelect.value || "";
-    setDisabledForUnknown(currentUnknown);
-    updateEvaluateState();
+    if (ELEMENTS.unknownSelect) {
+      ELEMENTS.unknownSelect.focus();
+    }
   }
 
-  init();
+  /**
+   * Valida el formulario en tiempo real
+   */
+  const validateFormDebounced = debounce(() => {
+    if (!state.unknown) return;
+    UIController.updateFormulaDisplay();
+  }, 300);
+
+  // ============================================
+  // INICIALIZACIÓN
+  // ============================================
+
+  function initialize() {
+    if (!ELEMENTS.unknownSelect || !ELEMENTS.form) {
+      return;
+    }
+
+    // Event listeners principales
+    ELEMENTS.unknownSelect.addEventListener("change", handleUnknownChange);
+    ELEMENTS.resetBtn?.addEventListener("click", resetForm);
+    ELEMENTS.form.addEventListener("submit", handleSubmit);
+
+    // Event listeners para inputs
+    const inputs = [
+      ELEMENTS.capitalizationInput,
+      ELEMENTS.capitalInput,
+      ELEMENTS.rateInput,
+      ELEMENTS.timeInput,
+      ELEMENTS.interestInput,
+      ELEMENTS.amountInput,
+    ];
+
+    inputs.forEach((input) => {
+      if (input) {
+        input.addEventListener("input", validateFormDebounced);
+        input.addEventListener(
+          "input",
+          debounce(UIController.updateFormattedPreviews, 200)
+        );
+      }
+    });
+
+    if (ELEMENTS.timeUnit) {
+      ELEMENTS.timeUnit.addEventListener("change", () => {
+        UIController.updateFormattedPreviews();
+        validateFormDebounced();
+      });
+    }
+
+    // Estado inicial
+    UIController.hideResults();
+    UIController.updateFormattedPreviews();
+    UIController.updateSubmitButton(false);
+  }
+
+  // Inicializar cuando el DOM esté listo
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initialize);
+  } else {
+    initialize();
+  }
 })();
