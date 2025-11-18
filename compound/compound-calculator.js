@@ -230,7 +230,10 @@
       try {
         // Frecuencia de capitalización (siempre necesaria, default = 1 si vacío)
         const rawFreq = (ELEMENTS.capitalizationInput.value || "").trim();
-        values.m = rawFreq === "" ? 1 : validatePositiveInteger(rawFreq, "Frecuencia de capitalización");
+        values.m =
+          rawFreq === ""
+            ? 1
+            : validatePositiveInteger(rawFreq, "Frecuencia de capitalización");
 
         // Validar según la variable desconocida
         switch (unknown) {
@@ -445,7 +448,6 @@
      * @param {Object} details - Detalles adicionales
      */
     static showResult(unknown, result /* formula, details */) {
-      // Solo mostrar el resultado de la incógnita al estilo calculadora simple.
       const variableName = VARIABLE_LABELS[unknown];
       const formattedResult = this.formatResult(unknown, result);
 
@@ -456,7 +458,7 @@
       // Mostrar contenedor de resultado
       toggleElement(ELEMENTS.resultSection, true);
 
-      // Renderizar alerta simple (igual patrón que interés simple)
+      // Renderizar alerta
       setElementHTML(
         ELEMENTS.resultAlert,
         `
@@ -573,9 +575,12 @@
         toggleElement(ELEMENTS.formulaSection, false);
         return;
       }
-      
+
       // Generar y mostrar la fórmula
-      const formula = FormulaGenerator.generate(state.unknown, validation.values);
+      const formula = FormulaGenerator.generate(
+        state.unknown,
+        validation.values
+      );
       setElementHTML(ELEMENTS.formulaDisplay, formula);
       toggleElement(ELEMENTS.formulaSection, true);
       this.updateSubmitButton(true);
