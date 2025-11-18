@@ -62,6 +62,7 @@
                     placeholder="Ej: 1 (anual), 12 (mensual), 4 (trimestral)"
                     step="1"
                     min="1"
+                    value="1"
                   />
                 </div>
                 <div class="form-text" id="compound-capitalizationFormatted">
@@ -194,14 +195,15 @@
             >
               <label class="form-label fw-bold">
                 <i class="fas fa-square-root-alt me-2"></i>Fórmula que se va a
-                usar (compuesto):
+                usar:
               </label>
               <div id="compound-formulaDisplay" class="formula-box">
                 Selecciona una incógnita e ingresa valores para determinar la
                 fórmula.
               </div>
               <small class="text-muted"
-                >Se asume capitalización anual: M = C (1 + i)^n</small
+                >La fórmula se selecciona automáticamente según los datos
+                disponibles.</small
               >
             </div>
 

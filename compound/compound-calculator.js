@@ -228,11 +228,9 @@
       let isValid = true;
 
       try {
-        // Frecuencia de capitalización (siempre necesaria)
-        values.m = validatePositiveInteger(
-          ELEMENTS.capitalizationInput.value,
-          "Frecuencia de capitalización"
-        );
+        // Frecuencia de capitalización (siempre necesaria, default = 1 si vacío)
+        const rawFreq = (ELEMENTS.capitalizationInput.value || "").trim();
+        values.m = rawFreq === "" ? 1 : validatePositiveInteger(rawFreq, "Frecuencia de capitalización");
 
         // Validar según la variable desconocida
         switch (unknown) {
@@ -446,23 +444,34 @@
      * @param {string} formula - Fórmula usada
      * @param {Object} details - Detalles adicionales
      */
-    static showResult(unknown, result, formula, details) {
+    static showResult(unknown, result /* formula, details */) {
+      // Solo mostrar el resultado de la incógnita al estilo calculadora simple.
       const variableName = VARIABLE_LABELS[unknown];
       const formattedResult = this.formatResult(unknown, result);
 
-      toggleElement(ELEMENTS.formulaSection, true);
+      // Ocultar sección de fórmula y detalles si existen
+      toggleElement(ELEMENTS.formulaSection, false);
+      toggleElement(ELEMENTS.resultDetails, false);
+
+      // Mostrar contenedor de resultado
       toggleElement(ELEMENTS.resultSection, true);
 
-      setElementHTML(ELEMENTS.formulaDisplay, formula);
-      setElementText(ELEMENTS.resultTitle, variableName);
-      setElementText(ELEMENTS.resultMessage, formattedResult);
-
-      // Mostrar detalles adicionales
-      this.showDetails(details);
+      // Renderizar alerta simple (igual patrón que interés simple)
+      setElementHTML(
+        ELEMENTS.resultAlert,
+        `
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>${variableName}:</strong>
+            <span class="ms-2">${formattedResult}</span>
+          </div>
+          <i class="fas fa-check-circle fa-2x text-success"></i>
+        </div>
+        `
+      );
 
       ELEMENTS.resultSection.classList.remove("d-none");
       ELEMENTS.resultSection.classList.add("fade-in");
-
       smoothScrollTo(ELEMENTS.resultSection, "center");
     }
 
@@ -470,24 +479,9 @@
      * Muestra detalles adicionales del cálculo
      * @param {Object} details - Detalles del cálculo
      */
-    static showDetails(details) {
-      if (!ELEMENTS.resultDetails) return;
-
-      const html = `
-        <p><strong>Capital:</strong> ${formatCurrency(details.C)}</p>
-        <p><strong>Tasa de Interés:</strong> ${formatPercentage(
-          details.i * 100
-        )}</p>
-        <p><strong>Tiempo:</strong> ${formatNumberTrim(details.n, 2)} años</p>
-        <p><strong>Capitalización:</strong> ${
-          CAPITALIZATION_FREQUENCIES[details.m] || details.m + " veces/año"
-        }</p>
-        <p><strong>Interés Ganado:</strong> ${formatCurrency(details.I)}</p>
-        <p><strong>Monto Final:</strong> ${formatCurrency(details.M)}</p>
-      `;
-
-      setElementHTML(ELEMENTS.resultDetails, html);
-      toggleElement(ELEMENTS.resultDetails, true);
+    static showDetails(/* details */) {
+      // Deshabilitado: sólo se muestra la incógnita solicitada.
+      toggleElement(ELEMENTS.resultDetails, false);
     }
 
     /**
@@ -569,22 +563,19 @@
      */
     static updateFormulaDisplay() {
       if (!state.unknown) {
-        toggleElement(ELEMENTS.formulaSection, false);
         this.updateSubmitButton(false);
+        toggleElement(ELEMENTS.formulaSection, false);
         return;
       }
-
       const validation = InputValidator.validateInputs(state.unknown);
       if (!validation.isValid) {
-        toggleElement(ELEMENTS.formulaSection, false);
         this.updateSubmitButton(false);
+        toggleElement(ELEMENTS.formulaSection, false);
         return;
       }
-
-      const formula = FormulaGenerator.generate(
-        state.unknown,
-        validation.values
-      );
+      
+      // Generar y mostrar la fórmula
+      const formula = FormulaGenerator.generate(state.unknown, validation.values);
       setElementHTML(ELEMENTS.formulaDisplay, formula);
       toggleElement(ELEMENTS.formulaSection, true);
       this.updateSubmitButton(true);
@@ -606,6 +597,7 @@
     static hideResults() {
       toggleElement(ELEMENTS.resultSection, false);
       toggleElement(ELEMENTS.formulaSection, false);
+      toggleElement(ELEMENTS.resultDetails, false);
       this.updateSubmitButton(false);
     }
   }
@@ -661,7 +653,7 @@
       state.formula = formula;
       state.details = details;
 
-      UIController.showResult(state.unknown, result, formula, details);
+      UIController.showResult(state.unknown, result /* formula, details */);
 
       // Guardar en historial
       saveCalculationToHistory({
